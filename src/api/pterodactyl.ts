@@ -8,7 +8,7 @@ import {
     IUserCreateResponse,
 } from '../typings/pterodactyl';
 
-export class Pterodactyl {
+export class PterodactylClient {
     private apiKey: string;
     public panelUrl: string;
 

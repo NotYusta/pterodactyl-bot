@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import { BotData } from './typings/bot';
 import { Client } from 'discord.js';
 import { registerEvents } from './events';
-import { Pterodactyl } from './api/pterodactyl';
+import { PterodactylClient } from './api/pterodactyl';
 import { AxiosError, all } from 'axios';
 dotenv.config();
 
@@ -18,7 +18,7 @@ const botData: BotData = {
 client.login(botData.token);
 registerEvents(botData.client);
 
-export const pterodactylClient = new Pterodactyl(process.env.PANEL_API_KEY!, process.env.PANEL_URL!);
+export const pterodactylClient = new PterodactylClient(process.env.PANEL_API_KEY!, process.env.PANEL_URL!);
 async function test() {
     const response = await pterodactylClient.getNodes();
     if(response instanceof AxiosError) {
