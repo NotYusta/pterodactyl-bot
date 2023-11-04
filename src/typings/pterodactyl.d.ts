@@ -48,6 +48,53 @@ export interface IServer {
     };
 }
 
+export interface IAllocation {
+    object: string;
+    attributes: {
+        id: number;
+        ip: string;
+        alias: string;
+        port: number;
+        notes?: string;
+        assigned: boolean;
+    };
+}
+
+export interface INode {
+    object: string;
+    attributes: {
+        id: number;
+        public: boolean;
+        name: string;
+        description: string;
+        location_id: number;
+        fqdn: string;
+        scheme: string;
+        behind_proxy: boolean;
+        maintenance_mode: boolean;
+        memory: {
+            total: number;
+            used: number;
+        };
+        memory_overallocate: number;
+        disk: {
+            total: number;
+            used: number;
+        };
+        disk_overallocate: number;
+        upload_size: number;
+        daemon_listen_port: number;
+        daemon_sftp_port: number;
+        daemon_base: string;
+        created_at: string;
+        updated_at: string;
+        allocated_resources: {
+            memory: number;
+            disk: number;
+        };
+    };
+}
+
 export interface IUserCreateRequest {
     username: string;
     email: string;
@@ -80,11 +127,10 @@ export interface IServersGetResponse {
     data: IServer[];
 }
 
-export interface IServersCreateRequest {
+export interface IServerCreateRequest {
     name: string;
     user: number;
     egg: number;
-    node: number;
     description: string;
     limits: {
         memory: number;
@@ -101,4 +147,14 @@ export interface IServersCreateRequest {
     allocations: {
         default: number;
     };
+}
+
+export interface IAllocationsGetResponse {
+    object: string;
+    data: IAllocation[];
+}
+
+export interface INodesGetResponse {
+    object: string;
+    data: INode[];
 }
