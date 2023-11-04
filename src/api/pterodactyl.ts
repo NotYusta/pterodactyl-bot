@@ -1,7 +1,10 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import {
     IAllocationsGetResponse,
+    IEgg,
+    INestsGetResponse,
     INodesGetResponse,
+    IServer,
     IServerCreateRequest,
     IServersGetResponse,
     IUserCreateRequest,
@@ -107,7 +110,39 @@ export class PterodactylClient {
         }
     }
 
-    public async createServer(request: IServerCreateRequest): Promise<[AxiosResponse] | AxiosError> {
+    public async getNests(): Promise<[INestsGetResponse, AxiosResponse] | AxiosError> {
+        try {
+            const response = await axios.get(`${this.panelUrl}/api/application/nests`, {
+                headers: {
+                    Authorization: `Bearer ${this.apiKey}`,
+                    'Content-Type': 'application/json',
+                    Accept: 'Application/vnd.pterodactyl.v1+json',
+                },
+            });
+
+            return [response.data, response];
+        } catch (error) {
+            return error as AxiosError;
+        }
+    }
+
+    public async getEgg(nestId: number, id: number): Promise<[IEgg, AxiosResponse] | AxiosError> {
+        try {
+            const response = await axios.get(`${this.panelUrl}/api/application/nests/${nestId}/eggs/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${this.apiKey}`,
+                    'Content-Type': 'application/json',
+                    Accept: 'Application/vnd.pterodactyl.v1+json',
+                },
+            });
+
+            return [response.data, response];
+        } catch (error) {
+            return error as AxiosError;
+        }
+    }
+
+    public async createServer(request: IServerCreateRequest): Promise<[IServer, AxiosResponse] | AxiosError> {
         try {
             const response = await axios.post(`${this.panelUrl}/api/application/servers`, request, {
                 headers: {
@@ -117,7 +152,7 @@ export class PterodactylClient {
                 },
             });
 
-            return [response];
+            return [response.data, response];
         } catch (error) {
             return error as AxiosError;
         }

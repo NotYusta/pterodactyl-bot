@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { BotCommand } from '../typings/system';
+import { BotCommand } from '../typings/bot';
 
 export const pingCommand: BotCommand = {
     builder: new SlashCommandBuilder(),

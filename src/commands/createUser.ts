@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, SlashCommandStringOption } from 'discord.js';
-import { BotCommand } from '../typings/system';
+import { BotCommand } from '../typings/bot';
 import { pterodactylClient } from '..';
 import { AxiosError } from 'axios';
 
@@ -26,17 +26,13 @@ export const createUserCommand: BotCommand = {
         });
 
         if (response instanceof AxiosError) {
-            await interaction.editReply(
-                `Failed to create user \`${username}\``
-            );
+            await interaction.editReply(`Failed to create user \`${username}\``);
 
             console.log('Failed to create user', response);
             return;
         }
 
-        await interaction.editReply(
-            `Created user ${username} with email ${email}`
-        );
+        await interaction.editReply(`Created user ${username} with email ${email}`);
     },
     build: (commandBuilder) => {
         commandBuilder.setName('createuser');

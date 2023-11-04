@@ -9,39 +9,39 @@ export const registerEvents = (botClient: Client) => {
     });
 
     botClient.on('interactionCreate', async (interaction) => {
-        if (!interaction.isChatInputCommand() || !interaction.member) return;
+        if (!interaction.member) return;
 
-        const commandName = interaction.commandName;
+        if (interaction.isChatInputCommand()) {
+            const commandName = interaction.commandName;
+            for (const command of botCommands) {
+                if (command.builder.name === commandName) {
+                    let isPermissioned = false;
+                    const cmdRoles = command.roles;
+                    const cmdUsers = command.users;
+                    const memberRoles = interaction.member.roles;
+                    if (cmdRoles && memberRoles instanceof GuildMemberRoleManager) {
+                        isPermissioned = cmdRoles.some((role) => memberRoles.cache.has(role));
+                    }
 
-        for (const command of botCommands) {
-            if (command.builder.name === commandName) {
-                let isPermissioned = false;
-                const cmdRoles = command.roles;
-                const cmdUsers = command.users;
-                const memberRoles = interaction.member.roles;
-                if (cmdRoles && memberRoles instanceof GuildMemberRoleManager) {
-                    isPermissioned = cmdRoles.some((role) => memberRoles.cache.has(role));
+                    if (cmdUsers && cmdUsers.length > 0) {
+                        isPermissioned = cmdUsers.includes(interaction.user.id);
+                    }
+
+                    if (!cmdRoles && !cmdUsers) {
+                        isPermissioned = true;
+                    }
+
+                    if (!isPermissioned) {
+                        await interaction.reply({
+                            content: 'You do not have permission to run this command.',
+                            ephemeral: true,
+                        });
+
+                        return;
+                    }
+
+                    await command.execute(interaction);
                 }
-
-                if (cmdUsers && cmdUsers.length > 0) {
-                    isPermissioned = cmdUsers.includes(interaction.user.id);
-                }
-
-                if(!cmdRoles && !cmdUsers) {
-                    isPermissioned = true;
-                }
-
-                if (!isPermissioned) {
-                    await interaction.reply({
-                        content: 'You do not have permission to run this command.',
-                        ephemeral: true,
-                    });
-                    
-                    return;
-                }
-                
-                
-                await command.execute(interaction);
             }
         }
     });

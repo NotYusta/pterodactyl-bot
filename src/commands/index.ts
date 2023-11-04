@@ -1,8 +1,9 @@
 import { Client } from 'discord.js';
 import { createUserCommand } from './createUser';
 import { pingCommand } from './ping';
+import { createServerCommand } from './createServer';
 
-export const botCommands = [createUserCommand, pingCommand];
+export const botCommands = [createUserCommand, pingCommand, createServerCommand];
 export const registerCommands = (client: Client<true>) => {
     for (const command of botCommands) {
         const builtCommand = command.build(command.builder);

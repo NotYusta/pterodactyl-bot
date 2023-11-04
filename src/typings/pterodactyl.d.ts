@@ -1,3 +1,27 @@
+export interface IEgg {
+    object: string;
+    attributes: {
+        id: number;
+        uuid: string;
+        nest: number;
+        author: string;
+        name: string;
+        description: string;
+        docker_image: string;
+        startup: string;
+    };
+}
+
+export interface INest {
+    object: string;
+    attributes: {
+        id: number;
+        uuid: string;
+        name: string;
+        description: string;
+    };
+}
+
 export interface IServer {
     object: string;
     attributes: {
@@ -131,7 +155,12 @@ export interface IServerCreateRequest {
     name: string;
     user: number;
     egg: number;
-    description: string;
+    description?: string;
+    docker_image: string;
+    startup: string;
+    environment: {
+        [key: string]: string;
+    };
     limits: {
         memory: number;
         swap: number;
@@ -144,7 +173,7 @@ export interface IServerCreateRequest {
         allocations: number;
         backups: number;
     };
-    allocations: {
+    allocation: {
         default: number;
     };
 }
@@ -157,4 +186,9 @@ export interface IAllocationsGetResponse {
 export interface INodesGetResponse {
     object: string;
     data: INode[];
+}
+
+export interface INestsGetResponse {
+    object: string;
+    data: INest[];
 }
