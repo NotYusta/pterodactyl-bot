@@ -4,8 +4,6 @@ import { allowedNodes, pterodactylClient } from '..';
 import { AxiosError } from 'axios';
 import { updateExpiryData } from '../utils';
 
-
-
 export const createServerCommand: BotCommand = {
     builder: new SlashCommandBuilder(),
     execute: async (interaction) => {
@@ -27,16 +25,15 @@ export const createServerCommand: BotCommand = {
         const description = interaction.options.getString('description', false) || undefined;
         const environment = interaction.options.getString('environment', false) || undefined;
 
-        if(expiryDays > 1000) {
+        if (expiryDays > 1000) {
             await interaction.editReply('Expiry days cannot be greater than 1000');
             return;
         }
 
-        if(expiryDays < 1) {
+        if (expiryDays < 1) {
             await interaction.editReply('Expiry days cannot be less than 1');
             return;
         }
-
 
         if (allowedNodes && !allowedNodes.includes(`${node}`)) {
             await interaction.editReply(

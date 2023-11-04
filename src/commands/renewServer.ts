@@ -11,12 +11,12 @@ export const renewCommand: BotCommand = {
         const serverIdentifier = interaction.options.getString('identifier', true);
         const days = interaction.options.getInteger('days', true);
 
-        if(days > 1000) {
+        if (days > 1000) {
             await interaction.editReply('Days cannot be greater than 1000');
             return;
         }
 
-        if(days < 1) {
+        if (days < 1) {
             await interaction.editReply('Days cannot be less than 1');
             return;
         }

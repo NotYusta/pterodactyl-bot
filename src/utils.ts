@@ -30,23 +30,21 @@ export const updateExpiryDataByServerId = (serverId: string, dayDuration: number
 };
 
 export const autoSuspend = async () => {
-    const expiryData= readExpiryData();
+    const expiryData = readExpiryData();
     const dataMap = JSON.parse(expiryData) as ExpiryDataMap;
     const keys = Object.keys(dataMap);
-    for(const key of keys) {
+    for (const key of keys) {
         const server = dataMap[key];
         const expiry = new Date(server[2]);
         const serverId = server[1];
 
-        console.log("Checking server", serverId, expiry.getTime(), Date.now())
-        if(expiry.getTime() < Date.now()) {
+        console.log('Checking server', serverId, expiry.getTime(), Date.now());
+        if (expiry.getTime() < Date.now()) {
             await pterodactylClient.suspendServer(serverId);
-            console.log("Suspended server", serverId);
+            console.log('Suspended server', serverId);
             continue;
         }
-
-
     }
 
     setTimeout(autoSuspend, autoSuspendInterval);
-}
+};
