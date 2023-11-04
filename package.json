@@ -1,0 +1,26 @@
+{
+  "name": "pterodactyl-dc-bot",
+  "version": "1.0.0",
+  "description": "Pterodactyl Discord Bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -rf dist",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "build": "tsc -p tsconfig.json",
+    "build:production": "npm run clean && npm run build",
+    "start": "node dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "prettier": "^3.0.3",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "discord.js": "^14.13.0",
+    "dotenv": "^16.3.1"
+  }
+}
