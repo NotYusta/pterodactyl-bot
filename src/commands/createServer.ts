@@ -2,6 +2,9 @@ import { SlashCommandBuilder, SlashCommandNumberOption, SlashCommandStringOption
 import { BotCommand } from '../typings/bot';
 import { allowedNodes, pterodactylClient } from '..';
 import { AxiosError } from 'axios';
+import { updateExpiryData } from '../utils';
+
+
 
 export const createServerCommand: BotCommand = {
     builder: new SlashCommandBuilder(),
@@ -15,15 +18,32 @@ export const createServerCommand: BotCommand = {
         const egg = interaction.options.getNumber('egg', true);
         const memory = interaction.options.getNumber('memory', true);
         const disk = interaction.options.getNumber('disk', true);
-        const description = interaction.options.getString('description', false) || undefined;
         const databases = interaction.options.getNumber('databases', true);
         const allocations = interaction.options.getNumber('allocations', true);
         const backups = interaction.options.getNumber('backups', true);
         const cpu = interaction.options.getNumber('cpu', true);
         const node = interaction.options.getNumber('node', true);
+        const expiryDays = interaction.options.getNumber('expirydays', true);
+        const description = interaction.options.getString('description', false) || undefined;
+        const environment = interaction.options.getString('environment', false) || undefined;
 
-        if(allowedNodes && !allowedNodes.includes(`${node}`)) {
-            await interaction.editReply(`Failed to create server \`${name}\`, node is not allowed, allowed nodes are: \`${allowedNodes.join(', ')}\``);
+        if(expiryDays > 1000) {
+            await interaction.editReply('Expiry days cannot be greater than 1000');
+            return;
+        }
+
+        if(expiryDays < 1) {
+            await interaction.editReply('Expiry days cannot be less than 1');
+            return;
+        }
+
+
+        if (allowedNodes && !allowedNodes.includes(`${node}`)) {
+            await interaction.editReply(
+                `Failed to create server \`${name}\`, node is not allowed, allowed nodes are: \`${allowedNodes.join(
+                    ', '
+                )}\``
+            );
 
             console.log('Failed to create server', 'Node is not allowed');
             return;
@@ -45,7 +65,7 @@ export const createServerCommand: BotCommand = {
             console.log('Failed to create server', 'No primary allocation found');
             return;
         }
-        
+
         const eggRes = await pterodactylClient.getEgg(nest, egg);
         if (eggRes instanceof AxiosError) {
             await interaction.editReply(`Failed to create server \`${name}\`, failed to get egg`);
@@ -55,6 +75,13 @@ export const createServerCommand: BotCommand = {
         }
 
         const eggData = eggRes[0].attributes;
+        const eggEnvironment: { [x: string]: string } = {};
+        if (environment) {
+            environment.split(',').forEach((env) => {
+                const split = env.split('=');
+                eggEnvironment[split[0]] = split[1];
+            });
+        }
         const response = await pterodactylClient.createServer({
             user: userId,
             name: name,
@@ -70,7 +97,7 @@ export const createServerCommand: BotCommand = {
             allocation: {
                 default: primaryAllocation.id,
             },
-            environment: {},
+            environment: eggEnvironment,
             limits: {
                 memory: memory,
                 disk: disk,
@@ -87,6 +114,7 @@ export const createServerCommand: BotCommand = {
             return;
         }
 
+        updateExpiryData(response[0].attributes.identifier, response[0].attributes.id, userId, expiryDays);
         await interaction.editReply(`Created server ${name} with ID ${response[0].attributes.id}`);
     },
     build: (commandBuilder) => {
@@ -148,10 +176,20 @@ export const createServerCommand: BotCommand = {
         nodeOption.setDescription('The node of the server');
         nodeOption.setRequired(true);
 
+        const expiryDays = new SlashCommandNumberOption();
+        expiryDays.setName('expirydays');
+        expiryDays.setDescription('The expiry days of the server');
+        expiryDays.setRequired(true);
+
         const descriptionOption = new SlashCommandStringOption();
         descriptionOption.setName('description');
         descriptionOption.setDescription('The description of the server');
         descriptionOption.setRequired(false);
+
+        const environmentOption = new SlashCommandStringOption();
+        environmentOption.setName('environment');
+        environmentOption.setDescription('The environment of the server');
+        environmentOption.setRequired(false);
 
         commandBuilder.addNumberOption(userIdOption);
         commandBuilder.addStringOption(nameOption);
@@ -164,7 +202,10 @@ export const createServerCommand: BotCommand = {
         commandBuilder.addNumberOption(backupsOption);
         commandBuilder.addNumberOption(cpuOption);
         commandBuilder.addNumberOption(nodeOption);
+        commandBuilder.addNumberOption(expiryDays);
+
         commandBuilder.addStringOption(descriptionOption);
+        commandBuilder.addStringOption(environmentOption);
 
         return commandBuilder;
     },

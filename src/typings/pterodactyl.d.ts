@@ -31,7 +31,7 @@ export interface IServer {
         identifier: string;
         name: string;
         description: string;
-        suspended: boolean;
+        is_suspended: boolean;
         limits: {
             memory: number;
             swap: number;
