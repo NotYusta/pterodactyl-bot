@@ -8,7 +8,7 @@ import {
     IServerCreateRequest,
     IServersGetResponse,
     IUserCreateRequest,
-    IUserCreateResponse,
+    IUser,
 } from '../typings/pterodactyl';
 
 export class PterodactylClient {
@@ -20,7 +20,7 @@ export class PterodactylClient {
         this.panelUrl = panelUrl;
     }
 
-    public async createUser(request: IUserCreateRequest): Promise<[IUserCreateResponse, AxiosResponse] | AxiosError> {
+    public async createUser(request: IUserCreateRequest): Promise<[IUser, AxiosResponse] | AxiosError> {
         try {
             const response = await axios.post(`${this.panelUrl}/api/application/users`, request, {
                 headers: {
@@ -128,7 +128,7 @@ export class PterodactylClient {
 
     public async getEgg(nestId: number, id: number): Promise<[IEgg, AxiosResponse] | AxiosError> {
         try {
-            const response = await axios.get(`${this.panelUrl}/api/application/nests/${nestId}/eggs/${id}`, {
+            const response = await axios.get(`${this.panelUrl}/api/application/nests/${nestId}/eggs/${id}?include=nest,variables`, {
                 headers: {
                     Authorization: `Bearer ${this.apiKey}`,
                     'Content-Type': 'application/json',
@@ -137,6 +137,43 @@ export class PterodactylClient {
             });
 
             return [response.data, response];
+        } catch (error) {
+            return error as AxiosError;
+        }
+    }
+
+    public async getEggs(nestId: number): Promise<[IEgg[], AxiosResponse] | AxiosError> {
+        try {
+            const response = await axios.get(`${this.panelUrl}/api/application/nests/${nestId}/eggs?include=nest,variables`, {
+                headers: {
+                    Authorization: `Bearer ${this.apiKey}`,
+                    'Content-Type': 'application/json',
+                    Accept: 'Application/vnd.pterodactyl.v1+json',
+                },
+            });
+
+            return [response.data.data, response];
+        } catch (error) {
+            return error as AxiosError;
+        }
+    }
+
+    public async getUsers(email?: string): Promise<[IUser[], AxiosResponse] | AxiosError> {
+        try {
+            let url = `${this.panelUrl}/api/application/users`;
+            if (email) {
+                url += `?filter[email]=${email}`;
+            }
+
+            const response = await axios.get(url, {
+                headers: {
+                    Authorization: `Bearer ${this.apiKey}`,
+                    'Content-Type': 'application/json',
+                    Accept: 'Application/vnd.pterodactyl.v1+json',
+                },
+            });
+
+            return [response.data.data, response];
         } catch (error) {
             return error as AxiosError;
         }

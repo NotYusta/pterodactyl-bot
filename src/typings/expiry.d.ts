@@ -1,2 +1,8 @@
-export type ExpiryData = [number, number, string];
-export type ExpiryDataMap = { [key: string]: ExpiryData };
+export type ExpiryData = {
+    id: number;
+    name: string;
+    userId: number;
+    expiry: Date;
+}
+
+export type ExpiryDataMap = { [key: string]: ExpiryData | undefined };

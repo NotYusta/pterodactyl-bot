@@ -1,3 +1,36 @@
+export interface IEggVariable {
+    object: string;
+    attributes: {
+        id: number;
+        egg_id: number;
+        name: string;
+        description: string;
+        env_variable: string;
+        default_value: string;
+        user_viewable: boolean;
+        user_editable: boolean;
+        rules: string;
+        created_at: string;
+        updated_at: string;
+    };
+}
+export interface IUser {
+    object: string;
+    attributes: {
+        id: number;
+        external_id: string;
+        uuid: string;
+        username: string;
+        email: string;
+        first_name: string;
+        last_name: string;
+        language: string;
+        root_admin: boolean;
+        '2fa': boolean;
+        created_at: string;
+        updated_at: string;
+    };
+}
 export interface IEgg {
     object: string;
     attributes: {
@@ -9,6 +42,15 @@ export interface IEgg {
         description: string;
         docker_image: string;
         startup: string;
+        created_at: string;
+        updated_at: string;
+        relationships: {
+            nest: INest;
+            variables: {
+                object: string;
+                data: IEggVariable[];
+            };
+        };
     };
 }
 
@@ -126,24 +168,6 @@ export interface IUserCreateRequest {
     last_name: string;
     password?: string;
     root_admin?: boolean;
-}
-
-export interface IUserCreateResponse {
-    object: string;
-    attributes: {
-        id: number;
-        external_id: string;
-        uuid: string;
-        username: string;
-        email: string;
-        first_name: string;
-        last_name: string;
-        language: string;
-        root_admin: boolean;
-        '2fa': boolean;
-        created_at: string;
-        updated_at: string;
-    };
 }
 
 export interface IServersGetResponse {

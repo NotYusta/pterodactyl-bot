@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, SlashCommandIntegerOption, SlashCommandStringOption } from 'discord.js';
 import { BotCommand } from '../typings/bot';
-import { updateExpiryDataByServerId } from '../utils';
+import { updateExpiryDataByServerIdf } from '../utils';
 
 export const renewCommand: BotCommand = {
     builder: new SlashCommandBuilder(),
@@ -20,7 +20,8 @@ export const renewCommand: BotCommand = {
             await interaction.editReply('Days cannot be less than 1');
             return;
         }
-        updateExpiryDataByServerId(serverIdentifier, days);
+
+        updateExpiryDataByServerIdf(serverIdentifier, days);
         await interaction.editReply(`Renewed server ${serverIdentifier} for ${days} days`);
     },
     build: (commandBuilder) => {

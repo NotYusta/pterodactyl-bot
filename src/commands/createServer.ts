@@ -2,7 +2,7 @@ import { SlashCommandBuilder, SlashCommandNumberOption, SlashCommandStringOption
 import { BotCommand } from '../typings/bot';
 import { allowedNodes, pterodactylClient } from '..';
 import { AxiosError } from 'axios';
-import { updateExpiryData } from '../utils';
+import { pteroEggs, setExpiryDataByServerIdf } from '../utils';
 
 export const createServerCommand: BotCommand = {
     builder: new SlashCommandBuilder(),
@@ -10,32 +10,31 @@ export const createServerCommand: BotCommand = {
         await interaction.deferReply();
         await interaction.editReply('Creating server...');
 
-        const userId = interaction.options.getNumber('user', true);
-        const name = interaction.options.getString('name', true);
-        const nest = interaction.options.getNumber('nest', true);
-        const egg = interaction.options.getNumber('egg', true);
-        const memory = interaction.options.getNumber('memory', true);
-        const disk = interaction.options.getNumber('disk', true);
-        const databases = interaction.options.getNumber('databases', true);
-        const allocations = interaction.options.getNumber('allocations', true);
-        const backups = interaction.options.getNumber('backups', true);
-        const cpu = interaction.options.getNumber('cpu', true);
-        const node = interaction.options.getNumber('node', true);
-        const expiryDays = interaction.options.getNumber('expirydays', true);
-        const description = interaction.options.getString('description', false) || undefined;
-        const environment = interaction.options.getString('environment', false) || undefined;
+        const userIdOption = interaction.options.getNumber('user', true);
+        const nameOption = interaction.options.getString('name', true);
+        const eggOption = interaction.options.getNumber('egg', true);
+        const memoryOption = interaction.options.getNumber('memory', true);
+        const diskOption = interaction.options.getNumber('disk', true);
+        const databasesOption = interaction.options.getNumber('databases', true);
+        const allocationsOption = interaction.options.getNumber('allocations', true);
+        const backupsOption = interaction.options.getNumber('backups', true);
+        const cpuOption = interaction.options.getNumber('cpu', true);
+        const nodeOption = interaction.options.getNumber('node', true);
+        const expiryDaysOption = interaction.options.getNumber('expirydays', true);
+        const descriptionOption = interaction.options.getString('description', false) || '';
+        const environmentOption = interaction.options.getString('environment', false);
 
-        if (expiryDays > 1000) {
+        if (expiryDaysOption > 1000) {
             await interaction.editReply('Expiry days cannot be greater than 1000');
             return;
         }
 
-        if (expiryDays < 1) {
+        if (expiryDaysOption < 1) {
             await interaction.editReply('Expiry days cannot be less than 1');
             return;
         }
 
-        if (allowedNodes && !allowedNodes.includes(`${node}`)) {
+        if (allowedNodes && !allowedNodes.includes(`${nodeOption}`)) {
             await interaction.editReply(
                 `Failed to create server \`${name}\`, node is not allowed, allowed nodes are: \`${allowedNodes.join(
                     ', '
@@ -46,7 +45,7 @@ export const createServerCommand: BotCommand = {
             return;
         }
 
-        const resAllocations = await pterodactylClient.getAllocations(node);
+        const resAllocations = await pterodactylClient.getAllocations(nodeOption);
         if (resAllocations instanceof AxiosError) {
             await interaction.editReply(`Failed to create server \`${name}\, failed to get allocations`);
 
@@ -63,45 +62,44 @@ export const createServerCommand: BotCommand = {
             return;
         }
 
-        const eggRes = await pterodactylClient.getEgg(nest, egg);
-        if (eggRes instanceof AxiosError) {
-            await interaction.editReply(`Failed to create server \`${name}\`, failed to get egg`);
+        const eggData = pteroEggs.find((eggData) => eggData.attributes.id === eggOption)?.attributes;
+        if (!eggData) {
+            await interaction.editReply(`Failed to create server \`${name}\`, egg not found`);
 
-            console.log('Failed to create server', eggRes.toJSON());
+            console.log('Failed to create server', 'Egg not found');
             return;
         }
 
-        const eggData = eggRes[0].attributes;
         const eggEnvironment: { [x: string]: string } = {};
-        if (environment) {
-            environment.split(',').forEach((env) => {
+        if (environmentOption) {
+            environmentOption.split(',').forEach((env) => {
                 const split = env.split('=');
                 eggEnvironment[split[0]] = split[1];
             });
         }
         const response = await pterodactylClient.createServer({
-            user: userId,
-            name: name,
-            egg: egg,
+            name: nameOption,
+            user: userIdOption,
+            egg: eggOption,
             docker_image: eggData.docker_image,
             startup: eggData.startup,
-            description: description,
+            environment: eggEnvironment,
+            limits: {
+                memory: memoryOption,
+                swap: 0,
+                disk: diskOption,
+                io: 500,
+                cpu: cpuOption,
+            },
             feature_limits: {
-                databases: databases,
-                allocations: allocations,
-                backups: backups,
+                databases: databasesOption,
+                allocations: allocationsOption,
+                backups: backupsOption,
             },
             allocation: {
                 default: primaryAllocation.id,
             },
-            environment: eggEnvironment,
-            limits: {
-                memory: memory,
-                disk: disk,
-                swap: 0,
-                io: 500,
-                cpu: cpu * 100,
-            },
+            description: descriptionOption,
         });
 
         if (response instanceof AxiosError) {
@@ -111,7 +109,9 @@ export const createServerCommand: BotCommand = {
             return;
         }
 
-        updateExpiryData(response[0].attributes.identifier, response[0].attributes.id, userId, expiryDays);
+        const date = new Date();
+        date.setDate(date.getDate() + expiryDaysOption);
+        setExpiryDataByServerIdf(response[0].attributes.identifier, response[0].attributes.id, nameOption, userIdOption, date);
         await interaction.editReply(`Created server ${name} with ID ${response[0].attributes.id}`);
     },
     build: (commandBuilder) => {
@@ -127,11 +127,6 @@ export const createServerCommand: BotCommand = {
         nameOption.setName('name');
         nameOption.setDescription('The name of the server');
         nameOption.setRequired(true);
-
-        const nestOption = new SlashCommandNumberOption();
-        nestOption.setName('nest');
-        nestOption.setDescription('The nest of the server');
-        nestOption.setRequired(true);
 
         const eggOption = new SlashCommandNumberOption();
         eggOption.setName('egg');
@@ -190,7 +185,6 @@ export const createServerCommand: BotCommand = {
 
         commandBuilder.addNumberOption(userIdOption);
         commandBuilder.addStringOption(nameOption);
-        commandBuilder.addNumberOption(nestOption);
         commandBuilder.addNumberOption(eggOption);
         commandBuilder.addNumberOption(memoryOption);
         commandBuilder.addNumberOption(diskOption);
