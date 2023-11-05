@@ -40,6 +40,9 @@ export const registerCommands = async (client: Client<true>) => {
             );
             builtCommand.setName(cmdConfig.name);
             builtCommand.setDescription(cmdConfig.description);
+            
+            botCmd.roles = cmdConfig.access.roles;
+            botCmd.users = cmdConfig.access.users;
         } else {
             console.log(`> Setting name and description for ${labelCmd} to ${labelCmd}`);
             builtCommand.setName(labelCmd);

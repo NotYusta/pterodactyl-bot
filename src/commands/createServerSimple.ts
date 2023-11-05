@@ -1,7 +1,7 @@
 import { SlashCommandBuilder, SlashCommandNumberOption, SlashCommandStringOption } from 'discord.js';
 import { BotCommand } from '../typings/bot';
 import { AxiosError } from 'axios';
-import { pterodactylClient } from '..';
+import { allowedNodes, pterodactylClient } from '..';
 import { pteroEggs, setExpiryDataByServerIdf } from '../utils';
 
 const allowedLocation = [2];
@@ -80,6 +80,7 @@ export const createServerSimpleCommand: BotCommand = {
         const allocationsOption = interaction.options.getNumber('allocations', true);
         const backupsOption = interaction.options.getNumber('backups', true);
         const cpuOption = interaction.options.getNumber('cpu', true);
+        const nodeOption = interaction.options.getNumber('node', false);
 
         const date = new Date();
         date.setDate(date.getDate() + 30);
@@ -117,11 +118,12 @@ export const createServerSimpleCommand: BotCommand = {
             return;
         }
 
-        const nodesData = resNodes[0].data.filter((node) => allowedLocation.includes(node.attributes.location_id));
-        // find the lowest usage node
-        const nodeData = nodesData.sort(
-            (a, b) => a.attributes.memory_overallocate - b.attributes.memory_overallocate
-        )[0];
+        const nodeData = nodeOption
+            ? resNodes[0].data.find((n) => allowedNodes?.includes(n.attributes.name))
+            : resNodes[0].data
+                  .filter((node) => allowedLocation.includes(node.attributes.location_id))
+                  .sort((a, b) => a.attributes.memory_overallocate - b.attributes.memory_overallocate)[0];
+
         if (!nodeData) {
             await interaction.editReply(`Failed to create server \`${nameOption}\`, no node found`);
 
@@ -252,6 +254,11 @@ export const createServerSimpleCommand: BotCommand = {
         environmentOption.setRequired(false);
         environmentOption.setAutocomplete(true);
 
+        const nodeOption = new SlashCommandNumberOption();
+        nodeOption.setName('node');
+        nodeOption.setDescription('The node of the server');
+        nodeOption.setRequired(false);
+
         commandBuilder.addStringOption(nameOption);
         commandBuilder.addStringOption(emailOption);
         commandBuilder.addStringOption(eggOption);
@@ -263,6 +270,7 @@ export const createServerSimpleCommand: BotCommand = {
         commandBuilder.addNumberOption(cpuOption);
         commandBuilder.addStringOption(descriptionOption);
         commandBuilder.addStringOption(environmentOption);
+        commandBuilder.addNumberOption(nodeOption);
 
         return commandBuilder;
     },
