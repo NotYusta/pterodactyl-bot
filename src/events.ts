@@ -19,7 +19,7 @@ export const registerEvents = (botClient: Client) => {
                 if (command.builder.name === commandName) {
                     const cmdRoles = command.roles || [];
                     const cmdUsers = command.users || [];
-                    if(!isAuthorized(cmdUsers, cmdRoles, interaction)) {
+                    if (!isAuthorized(cmdUsers, cmdRoles, interaction)) {
                         await interaction.reply('You are not authorized to use this command');
                         return;
                     }
@@ -36,7 +36,7 @@ export const registerEvents = (botClient: Client) => {
                         const cmdRoles = command.roles || [];
                         const cmdUsers = command.users || [];
 
-                        if(!isAuthorized(cmdUsers, cmdRoles, interaction)) {
+                        if (!isAuthorized(cmdUsers, cmdRoles, interaction)) {
                             return;
                         }
 
@@ -49,7 +49,7 @@ export const registerEvents = (botClient: Client) => {
 };
 
 const isAuthorized = (authorizedUsers: string[], authorizedRoles: string[], interaction: Interaction): boolean => {
-    if(authorizedRoles.length === 0 && authorizedUsers.length === 0) {
+    if (authorizedRoles.length === 0 && authorizedUsers.length === 0) {
         return true;
     }
 
@@ -58,9 +58,7 @@ const isAuthorized = (authorizedUsers: string[], authorizedRoles: string[], inte
     }
 
     const roles = interaction.member?.roles;
-    if (roles instanceof GuildMemberRoleManager &&
-        authorizedRoles.some((role) => roles.cache.has(role))
-    ) {
+    if (roles instanceof GuildMemberRoleManager && authorizedRoles.some((role) => roles.cache.has(role))) {
         return true;
     }
 

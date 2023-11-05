@@ -3,6 +3,6 @@ export type ExpiryData = {
     name: string;
     userId: number;
     expiry: Date;
-}
+};
 
 export type ExpiryDataMap = { [key: string]: ExpiryData | undefined };

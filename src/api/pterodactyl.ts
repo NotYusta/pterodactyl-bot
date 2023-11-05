@@ -128,13 +128,16 @@ export class PterodactylClient {
 
     public async getEgg(nestId: number, id: number): Promise<[IEgg, AxiosResponse] | AxiosError> {
         try {
-            const response = await axios.get(`${this.panelUrl}/api/application/nests/${nestId}/eggs/${id}?include=nest,variables`, {
-                headers: {
-                    Authorization: `Bearer ${this.apiKey}`,
-                    'Content-Type': 'application/json',
-                    Accept: 'Application/vnd.pterodactyl.v1+json',
-                },
-            });
+            const response = await axios.get(
+                `${this.panelUrl}/api/application/nests/${nestId}/eggs/${id}?include=nest,variables`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${this.apiKey}`,
+                        'Content-Type': 'application/json',
+                        Accept: 'Application/vnd.pterodactyl.v1+json',
+                    },
+                }
+            );
 
             return [response.data, response];
         } catch (error) {
@@ -144,13 +147,16 @@ export class PterodactylClient {
 
     public async getEggs(nestId: number): Promise<[IEgg[], AxiosResponse] | AxiosError> {
         try {
-            const response = await axios.get(`${this.panelUrl}/api/application/nests/${nestId}/eggs?include=nest,variables`, {
-                headers: {
-                    Authorization: `Bearer ${this.apiKey}`,
-                    'Content-Type': 'application/json',
-                    Accept: 'Application/vnd.pterodactyl.v1+json',
-                },
-            });
+            const response = await axios.get(
+                `${this.panelUrl}/api/application/nests/${nestId}/eggs?include=nest,variables`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${this.apiKey}`,
+                        'Content-Type': 'application/json',
+                        Accept: 'Application/vnd.pterodactyl.v1+json',
+                    },
+                }
+            );
 
             return [response.data.data, response];
         } catch (error) {

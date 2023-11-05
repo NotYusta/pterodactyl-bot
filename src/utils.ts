@@ -61,7 +61,13 @@ export const updateServersExpiry = async (): Promise<boolean> => {
         const expiryDataServer = expiryData[serverIdentifier];
         if (!expiryDataServer) {
             console.log('Failed to get expiry data for server', serverId);
-            setExpiryDataByServerIdf(serverIdentifier, serverId, server.attributes.name, server.attributes.user, expiryDate);
+            setExpiryDataByServerIdf(
+                serverIdentifier,
+                serverId,
+                server.attributes.name,
+                server.attributes.user,
+                expiryDate
+            );
             continue;
         }
     }
@@ -97,7 +103,7 @@ export const autoSuspend = async () => {
         if (!server) {
             continue;
         }
-        
+
         const expiry = new Date(server.expiry);
         const serverId = server.id;
 

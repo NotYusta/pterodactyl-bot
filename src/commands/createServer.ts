@@ -111,11 +111,16 @@ export const createServerCommand: BotCommand = {
 
         const date = new Date();
         date.setDate(date.getDate() + expiryDaysOption);
-        setExpiryDataByServerIdf(response[0].attributes.identifier, response[0].attributes.id, nameOption, userIdOption, date);
+        setExpiryDataByServerIdf(
+            response[0].attributes.identifier,
+            response[0].attributes.id,
+            nameOption,
+            userIdOption,
+            date
+        );
         await interaction.editReply(`Created server ${name} with ID ${response[0].attributes.id}`);
     },
     build: (commandBuilder) => {
-
         const userIdOption = new SlashCommandNumberOption();
         userIdOption.setName('user');
         userIdOption.setDescription('The user ID of the server');
