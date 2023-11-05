@@ -1,0 +1,37 @@
+commands:
+  ping:
+    name: 'ping'
+    description: 'Ping the server'
+    access:
+      roles: []
+      users: []
+  create-server:
+    name: 'create-server'
+    description: 'Create a new server'
+    access:
+      roles: []
+      users: []
+  create-server-simple:
+    name: 'create-server-simple'
+    description: 'Create a new server'
+    access:
+      roles: []
+      users: []
+  create-user:
+    name: 'create-user'
+    description: 'Create a new user'
+    access:
+      roles: []
+      users: []
+  renew-server:
+    name: 'renew-server'
+    description: 'Renew a server'
+    access:
+      roles: []
+      users: []
+  update-eggs:
+    name: 'update-eggs'
+    description: 'Update eggs'
+    access:
+      roles: []
+      users: []

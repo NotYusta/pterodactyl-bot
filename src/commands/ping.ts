@@ -7,9 +7,6 @@ export const pingCommand: BotCommand = {
         await interaction.reply('Pong!');
     },
     build: (commandBuilder) => {
-        commandBuilder.setName('ping');
-        commandBuilder.setDescription('Replies with Pong!');
-
         return commandBuilder;
     },
 };

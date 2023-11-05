@@ -14,7 +14,8 @@ export const registerEvents = (botClient: Client) => {
 
         if (interaction.isChatInputCommand()) {
             const commandName = interaction.commandName;
-            for (const command of botCommands) {
+            for (const c of botCommands) {
+                const command = c[1];
                 if (command.builder.name === commandName) {
                     const cmdRoles = command.roles || [];
                     const cmdUsers = command.users || [];
@@ -28,7 +29,8 @@ export const registerEvents = (botClient: Client) => {
             }
         } else if (interaction.isAutocomplete()) {
             const commandName = interaction.commandName;
-            for (const command of botCommands) {
+            for (const c of botCommands) {
+                const command = c[1];
                 if (command.builder.name === commandName) {
                     if (command.autocomplete) {
                         const cmdRoles = command.roles || [];

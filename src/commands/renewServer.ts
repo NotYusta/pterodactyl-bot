@@ -25,9 +25,6 @@ export const renewCommand: BotCommand = {
         await interaction.editReply(`Renewed server ${serverIdentifier} for ${days} days`);
     },
     build: (commandBuilder) => {
-        commandBuilder.setName('renew-server');
-        commandBuilder.setDescription('Renew a server');
-
         const serverIdentifierOption = new SlashCommandStringOption();
         serverIdentifierOption.setName('identifier');
         serverIdentifierOption.setDescription('The Identifier of the server');

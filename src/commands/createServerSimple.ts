@@ -195,9 +195,6 @@ export const createServerSimpleCommand: BotCommand = {
         await interaction.editReply(`Created server ${nameOption} with ID ${response[0].attributes.id}`);
     },
     build: (commandBuilder) => {
-        commandBuilder.setName('createserver-simple');
-        commandBuilder.setDescription('Create a new server');
-
         const nameOption = new SlashCommandStringOption();
         nameOption.setName('name');
         nameOption.setDescription('The name of the server');

@@ -5,8 +5,6 @@ import { AxiosError } from 'axios';
 
 export const createUserCommand: BotCommand = {
     builder: new SlashCommandBuilder(),
-    roles: [''],
-    users: ['325258033523458049'],
     execute: async (interaction) => {
         await interaction.deferReply();
         await interaction.editReply('Creating user...');
@@ -35,8 +33,6 @@ export const createUserCommand: BotCommand = {
         await interaction.editReply(`Created user ${username} with email ${email}`);
     },
     build: (commandBuilder) => {
-        commandBuilder.setName('createuser');
-        commandBuilder.setDescription('Create a new user');
         const usernameOption = new SlashCommandStringOption();
         usernameOption.setName('username');
         usernameOption.setDescription('The username of the user');

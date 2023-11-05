@@ -4,6 +4,7 @@ import { Client } from 'discord.js';
 import { registerEvents } from './events';
 import { PterodactylClient } from './api/pterodactyl';
 import { autoSuspend, updatePteroEggs } from './utils';
+import { loadConfig } from './config';
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ export const allowedNodes = process.env.ALLOWED_NODES?.split(',');
 export const pterodactylClient = new PterodactylClient(process.env.PANEL_API_KEY!, process.env.PANEL_URL!);
 
 async function run() {
+    loadConfig(process.env.CONFIG_PATH!);
     await updatePteroEggs();
     await autoSuspend();
     await client.login(botData.token);
